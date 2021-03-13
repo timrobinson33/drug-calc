@@ -1,25 +1,30 @@
-import logo from './logo.svg';
 import './App.css';
+
+const medicines = [
+  { drugName: "Morphine 1st Line"},
+  { drugName: "Diamorphine" },
+  { drugName: "Haloperidol" },
+  { drugName: "Metoclopramide" },
+  { drugName: "Cyclizine" },
+  { drugName: "Levomepromazine" },
+  { drugName: "Midazolam" },
+  { drugName: "Haloperidol" },
+  { drugName: "Levomepromazine" },
+  { drugName: "Hyoscine Butylbromide" },
+  { drugName: "Hyoscine Hydrobromide" },
+]
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+
+    <div>
+      <select>
+      {medicines.map(o => <option value={o.drugName}>{o.drugName}</option>)}
+      </select>
+      </div>
+
   );
 }
 
 export default App;
+
