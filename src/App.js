@@ -139,7 +139,7 @@ function App() {
                 </div>
                 <div>
                     <span>Stat/PRN doses: </span>
-                    <select onChange={e => setNumStatDoses(Number(e.target.value))}>
+                    <select value={numStatDoses} onChange={e => setNumStatDoses(Number(e.target.value))}>
                         {_.range(7).map(x => <option key={x} value={x}>{x}</option>)}
                     </select>
                     {!!numStatDoses && <>
@@ -150,13 +150,16 @@ function App() {
                 </div>
                 {showCalc && <>
                     <div>
-                        <span>Total dose: {totalDoseMg}mg = {formatNumber(totalDoseMl)} ml</span>
+                        <span>Total dose: {prescribedDose} + ({numStatDoses} x {statDoseStrength}) = {totalDoseMg}mg</span>
+                    </div>
+                    <div>
+                        <span>= {totalDoseMg} / {drugStrength.mg} x {drugStrength.ml} = {formatNumber(totalDoseMl)}ml</span>
                     </div>
                     <div>
                         <span>Number of vials: {numVials}</span>
                     </div>
                     <div>
-                        <span>Waste: {wasteMg}mg = {formatNumber(wasteMl)}ml</span>
+                        <span>Waste: {formatNumber(wasteMg)}mg (= {formatNumber(wasteMl)}ml)</span>
                     </div>
                 </>}
                 <button onClick={() => setDrugIdx(0)}>Clear</button>
