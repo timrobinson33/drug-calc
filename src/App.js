@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import './App.css';
 import _ from 'lodash'
 
+const divide = '\u00f7'
+
 const medicines = [
     { drugName: "" },
     {
@@ -9,11 +11,11 @@ const medicines = [
         strengths: [
             { mg: 10, ml: 1 },
             { mg: 15, ml: 1 },
-            { mg: 30, ml: 1 },
+            { mg: 20, ml: 1 },
             { mg: 30, ml: 1 },
             { mg: 10, ml: 2 },
             { mg: 15, ml: 2 },
-            { mg: 30, ml: 2 },
+            { mg: 20, ml: 2 },
             { mg: 30, ml: 2 },
         ]
     },
@@ -28,6 +30,22 @@ const medicines = [
             { mg: 15, ml: 2 },
             { mg: 30, ml: 2 },
             { mg: 100, ml: 2 },
+        ]
+    },
+    {
+        drugName: "Oxycodone",
+        strengths: [
+            { mg: 10, ml: 1 },
+            { mg: 20, ml: 2 },
+            { mg: 50, ml: 1 },
+        ]
+    },
+    {
+        drugName: "Fentanyl",
+        strengths: [
+            { mg: 0.05, ml: 1 },
+            { mg: 0.1, ml: 2 },
+            { mg: 0.5, ml: 5 },
         ]
     },
     {
@@ -58,18 +76,6 @@ const medicines = [
         drugName: "Midazolam",
         strengths: [
             { mg: 10, ml: 2 },
-        ]
-    },
-    {
-        drugName: "Haloperidol",
-        strengths: [
-            { mg: 5, ml: 1 },
-        ]
-    },
-    {
-        drugName: "Levomepromazine",
-        strengths: [
-            { mg: 25, ml: 1 },
         ]
     },
     {
@@ -150,10 +156,10 @@ function App() {
                 </div>
                 {showCalc && <>
                     <div>
-                        <span>Total dose: {prescribedDose} + ({numStatDoses} x {statDoseStrength}) = {totalDoseMg}mg</span>
+                        <span>Total dose (mg): {prescribedDose} + ({numStatDoses} x {statDoseStrength}) = {totalDoseMg}mg</span>
                     </div>
                     <div>
-                        <span>= {totalDoseMg} / {drugStrength.mg} x {drugStrength.ml} = {formatNumber(totalDoseMl)}ml</span>
+                        <span>Total dose (ml): {totalDoseMg} {divide} {drugStrength.mg} x {drugStrength.ml} = {formatNumber(totalDoseMl)}ml</span>
                     </div>
                     <div>
                         <span>Number of vials: {numVials}</span>
@@ -171,9 +177,8 @@ function App() {
 export default App;
 
 /*
-bug - select morphine, select strength not in list, select different drug, select amount
-deal with change drug
-layout
-text boxes smaller
+
+Fentanyl should be in mcg
+should it have a separate button to calculate?
 
 */
