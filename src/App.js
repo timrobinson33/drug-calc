@@ -122,13 +122,15 @@ function App() {
                 <select value={drugIdx} onChange={e => selectDrug(Number(e.target.value))}>
                     {medicines.map((x, i) => <option key={i} value={i}>{x.drugName}</option>)}
                 </select>
-                <span> </span>
-                {!!drugIdx &&
+            </div>
+            {!!drugIdx &&
+                <div>
+                    <span>Strength: </span>
                     <select value={strengthIdx} onChange={e => setStrengthIdx(parseInt(e.target.value))}>
                         {medicines[drugIdx].strengths.map((x, i) => <option key={i} value={i}>{`${x.mg}mg/${x.ml}ml`}</option>)}
                     </select>
-                }
-            </div>
+                </div>
+            }
             {!!drugIdx && <>
                 <div>
                     <span>Prescribed dose: </span>
@@ -157,7 +159,7 @@ function App() {
                         <span>Waste: {wasteMg}mg = {formatNumber(wasteMl)}ml</span>
                     </div>
                 </>}
-                <button onClick = {() => setDrugIdx(0)}>Clear</button>
+                <button onClick={() => setDrugIdx(0)}>Clear</button>
             </>}
         </div>
     );
