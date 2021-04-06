@@ -103,29 +103,20 @@ const medicines = [
     },
 ]
 
-const STATUS_INITIAL = 0
-const STATUS_DISCLAIMER_AGREED = 1
-const STATUS_DRUG_SELECTED = 2
-const STATUS_STRENGTH_SELECTED = 3
-const STATUS_DOSE_ENTERED = 4
-const STATUS_RESULT_DISPLAYED = 5
-
 function formatNumber(n) {
     return parseFloat(n.toFixed(2))
 }
 
-function Results({ state }) {
-    const prescribedDose = Number(state.prescribedDoseStr ?? 0)
-    const drugStrength = medicines[state.drugIdx ?? 0].strengths[state.strengthIdx ?? 0]
-    const statDoseStrength = Number(state.statDoseStrengthStr ?? 0)
-    const totalDoseMg = prescribedDose + (state.numStatDoses ?? 0) * (statDoseStrength ?? 0)
+function Results({ drugIdx, strengthIdx, prescribedDose, numStatDoses, statDoseStrength }) {
+    const drugStrength = medicines[drugIdx].strengths[strengthIdx]
+    const totalDoseMg = prescribedDose + numStatDoses * statDoseStrength
     const totalDoseMl = totalDoseMg / drugStrength.mg * drugStrength.ml
     const numVials = _.ceil(totalDoseMl / drugStrength.ml)
     const wasteMl = numVials * drugStrength.ml - totalDoseMl
     const wasteMg = numVials * drugStrength.mg - totalDoseMg
     return <>
         <div>
-            <span>Total dose (mg): {prescribedDose} + ({state.numStatDoses ?? 0} x {statDoseStrength}) = {totalDoseMg}mg</span>
+            <span>Total dose (mg): {prescribedDose} + ({numStatDoses} x {statDoseStrength}) = {totalDoseMg}mg</span>
         </div>
         <div>
             <span>Total dose (ml): {totalDoseMg} {divide} {drugStrength.mg} x {drugStrength.ml} = {formatNumber(totalDoseMl)}ml</span>
@@ -140,54 +131,70 @@ function Results({ state }) {
 }
 
 export default function App() {
-    const [state, setState] = useState({ status: STATUS_INITIAL })
+    const [drugIdx, setDrugIdx] = useState(0)
+    const [strengthIdx, setStrengthIdx] = useState(0)
+    const [prescribedDoseStr, setPrescribedDoseStr] = useState("")
+    const [numStatDoses, setNumStatDoses] = useState(0)
+    const [statDoseStrengthStr, setStatDoseStrengthStr] = useState("")
+    const [showResults, setShowResults] = useState(false)
 
-    const showResults = (state.status === STATUS_RESULT_DISPLAYED)
+    const prescribedDose = Number(prescribedDoseStr)
+    const statDoseStrength = Number(statDoseStrengthStr)
+    const showCalc = !showResults && !!(prescribedDose || (statDoseStrength && numStatDoses))
 
-    const selectDrug = drugIdx => {
-        setState({
-            status: drugIdx ? STATUS_DRUG_SELECTED : STATUS_DISCLAIMER_AGREED,
-            drugIdx,
-        })
+    function selectDrug(i) {
+        setDrugIdx(i)
+        selectStrength(0)
     }
 
-    const mutateState = (status, rest) => setState({ ...state, status, ...rest })
+    function selectStrength(i) {
+        setStrengthIdx(i)
+        setPrescribedDoseStr("")
+        selectNumStatDoses(0)
+        setShowResults(false)
+    }
+
+    function selectNumStatDoses(n) {
+        setNumStatDoses(n)
+        if (!n) {
+            setStatDoseStrengthStr("")
+        }
+    }
 
     return (
         <div>
             <div>
                 <span>Drug: </span>
-                <select value={state.drugIdx ?? 0} disabled={showResults} onChange={e => selectDrug(Number(e.target.value))}>
+                <select value={drugIdx} disabled={showResults} onChange={e => selectDrug(Number(e.target.value))}>
                     {medicines.map((x, i) => <option key={i} value={i}>{x.drugName}</option>)}
                 </select>
             </div>
-            {state.status >= STATUS_DRUG_SELECTED &&
-                <div>
-                    <span>Strength: </span>
-                    <select value={state.strengthIdx ?? 0} disabled={showResults} onChange={e => mutateState(STATUS_STRENGTH_SELECTED, { strengthIdx: parseInt(e.target.value) })}>
-                        {medicines[state.drugIdx].strengths.map((x, i) => <option key={i} value={i}>{x.mg ? `${x.mg}mg/${x.ml}ml` : ""}</option>)}
-                    </select>
-                </div>
-            }
-            {state.status >= STATUS_STRENGTH_SELECTED && <>
+            {!!drugIdx && <div>
+                <span>Strength: </span>
+                <select value={strengthIdx} disabled={showResults} onChange={e => selectStrength(parseInt(e.target.value))}>
+                    {medicines[drugIdx].strengths.map((x, i) => <option key={i} value={i}>{x.mg ? `${x.mg}mg/${x.ml}ml` : ""}</option>)}
+                </select>
+            </div>}
+            {!!strengthIdx && <>
                 <div>
                     <span>Prescribed dose: </span>
-                    <input type="number" disabled={showResults} min={0} value={state.prescribedDoseStr ?? ""} onChange={e => mutateState(STATUS_DOSE_ENTERED, { prescribedDoseStr: e.target.value })} />
+                    <input type="number" disabled={showResults} min={0} value={prescribedDoseStr} onChange={e => setPrescribedDoseStr(e.target.value)} />
                     <span> mg</span>
                 </div>
                 <div>
                     <span>Stat/PRN doses: </span>
-                    <select value={state.numStatDoses ?? 0} disabled={showResults} onChange={e => mutateState(STATUS_DOSE_ENTERED, { numStatDoses: (parseInt(e.target.value)) })}>
+                    <select value={numStatDoses} disabled={showResults} onChange={e => selectNumStatDoses(parseInt(e.target.value))}>
                         {_.range(7).map(x => <option key={x} value={x}>{x}</option>)}
                     </select>
                     <span> x </span>
-                    <input type="number" min={0} disabled={showResults} value={state.statDoseStrengthStr ?? ""} onChange={e => mutateState(STATUS_DOSE_ENTERED, { statDoseStrengthStr: e.target.value })} />
+                    <input type="number" min={0} disabled={showResults || (!numStatDoses)} value={statDoseStrengthStr} onChange={e => setStatDoseStrengthStr(e.target.value)} />
                     <span> mg</span>
                 </div>
-                {state.status === STATUS_DOSE_ENTERED && <div>
-                    <button onClick={() => { mutateState(STATUS_RESULT_DISPLAYED) }}>Calculate</button>
+                {showCalc && <div>
+                    <button onClick={() => { setShowResults(true) }}>Calculate</button>
                 </div>}
-                {showResults && <Results state={state} />}
+                {showResults &&
+                    <Results drugIdx={drugIdx} strengthIdx={strengthIdx} prescribedDose={prescribedDose} numStatDoses={numStatDoses} statDoseStrength={statDoseStrength} />}
                 <button onClick={() => { selectDrug(0) }}>Clear</button>
             </>}
         </div>
