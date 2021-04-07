@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import './App.css';
+import './App.css'
 import _ from 'lodash'
 
 const divide = '\u00f7'
@@ -183,7 +183,7 @@ function MainView() {
     }
 
     return (
-        <div>
+        <form>
             <div>
                 <label>Drug: </label>
                 <select value={drugIdx} disabled={showResults} onChange={e => selectDrug(Number(e.target.value))}>
@@ -218,7 +218,7 @@ function MainView() {
                     <Results drugIdx={drugIdx} strengthIdx={strengthIdx} prescribedDose={prescribedDose} numStatDoses={numStatDoses} statDoseStrength={statDoseStrength} />}
                 <button onClick={() => { selectDrug(0) }}>Reset</button>
             </>}
-        </div>
+        </form>
     )
 }
 
