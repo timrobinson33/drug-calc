@@ -185,25 +185,25 @@ function MainView() {
     return (
         <div>
             <div>
-                <span>Drug: </span>
+                <label>Drug: </label>
                 <select value={drugIdx} disabled={showResults} onChange={e => selectDrug(Number(e.target.value))}>
                     {medicines.map((x, i) => <option key={i} value={i}>{x.drugName}</option>)}
                 </select>
             </div>
             {!!drugIdx && <div>
-                <span>Strength: </span>
+                <label>Strength: </label>
                 <select value={strengthIdx} disabled={showResults} onChange={e => selectStrength(parseInt(e.target.value))}>
                     {medicines[drugIdx].strengths.map((x, i) => <option key={i} value={i}>{x.amount ? `${x.amount}${units}/${x.volume}ml` : ""}</option>)}
                 </select>
             </div>}
             {!!strengthIdx && <>
                 <div>
-                    <span>Prescribed dose: </span>
+                    <label>Prescribed dose: </label>
                     <input type="number" disabled={showResults} min={0} value={prescribedDoseStr} onChange={e => setPrescribedDoseStr(e.target.value)} />
                     <span> {units}</span>
                 </div>
                 <div>
-                    <span>Stat/PRN doses: </span>
+                    <label>Stat/PRN doses: </label>
                     <select value={numStatDoses} disabled={showResults} onChange={e => selectNumStatDoses(parseInt(e.target.value))}>
                         {_.range(7).map(x => <option key={x} value={x}>{x}</option>)}
                     </select>
