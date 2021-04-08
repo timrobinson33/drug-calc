@@ -205,7 +205,7 @@ function MainView() {
                     <span> {units}</span>
                 </div>
                 <div>
-                    <label>Stat/PRN doses: </label>
+                    <label>+ Stat/PRN doses: </label>
                     <select value={numStatDoses} disabled={showResults} onChange={e => selectNumStatDoses(parseInt(e.target.value))}>
                         {_.range(7).map(x => <option key={x} value={x}>{x}</option>)}
                     </select>
