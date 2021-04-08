@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import 'mvp.css'
 import './App.css'
 import _ from 'lodash'
 
@@ -130,20 +131,21 @@ function Results({ drugIdx, strengthIdx, prescribedDose, numStatDoses, statDoseS
     const waste = numVials * drugStrength.amount - totalDose
     const wasteMl = numVials * drugStrength.volume - totalDoseMl
     return (
-        <>
-            <div>
-                <span>Total dose ({units}): {prescribedDose} + ({numStatDoses} x {statDoseStrength}) = {totalDose}{units}</span>
-            </div>
-            <div>
-                <span>Total dose (ml): {totalDose} {divide} {drugStrength.amount} x {drugStrength.volume} = {formatNumber(totalDoseMl)}ml</span>
-            </div>
-            <div>
-                <span>Number of vials: {numVials}</span>
-            </div>
-            <div>
-                <span>Waste: {formatNumber(waste)}{units} (= {formatNumber(wasteMl)}ml)</span>
-            </div>
-        </>
+        <div class="box">
+                <label>Results:</label>
+                <p>
+                    <span>Total dose ({units}): {prescribedDose} + ({numStatDoses} x {statDoseStrength}) = {totalDose}{units}</span>
+                </p>
+                <p>
+                    <span>Total dose (ml): {totalDose} {divide} {drugStrength.amount} x {drugStrength.volume} = {formatNumber(totalDoseMl)}ml</span>
+                </p>
+                <p>
+                    <span>Number of vials: {numVials}</span>
+                </p>
+                <p>
+                    <span>Waste: {formatNumber(waste)}{units} (= {formatNumber(wasteMl)}ml)</span>
+                </p>
+        </div>
     )
 }
 
@@ -211,12 +213,12 @@ function MainView() {
                     <input type="number" min={0} disabled={showResults || (!numStatDoses)} value={statDoseStrengthStr} onChange={e => setStatDoseStrengthStr(e.target.value)} />
                     <span> {units}</span>
                 </div>
-                {showCalc && <div>
-                    <button onClick={() => { setShowResults(true) }}>Calculate</button>
-                </div>}
                 {showResults &&
                     <Results drugIdx={drugIdx} strengthIdx={strengthIdx} prescribedDose={prescribedDose} numStatDoses={numStatDoses} statDoseStrength={statDoseStrength} />}
                 <button onClick={() => { selectDrug(0) }}>Reset</button>
+                {showCalc && 
+                    <button onClick={() => { setShowResults(true) }}>Calculate</button>
+                }
             </>}
         </form>
     )
@@ -225,7 +227,7 @@ function MainView() {
 function Disclaimer({ callback }) {
     return (
         <div>
-            <h1>Disclaimer</h1>
+            <h3>Disclaimer</h3>
             <p>This application is intended to be used only to cross-check manual drug calculations.</p>
             <p>It is not approved by NHS or any other healthcare body and you should not rely on it to perform drug calculations.</p>
             <p>The authors accept no liability for any errors in the application.</p>
@@ -236,7 +238,11 @@ function Disclaimer({ callback }) {
 
 export default function App() {
     const [disclaimerAgreed, setDisclaimerAgreed] = useState(false)
-    return disclaimerAgreed
-        ? <MainView />
-        : <Disclaimer callback={() => setDisclaimerAgreed(true)} />
+    return <>
+        <h2>Drug calculation checker</h2>
+        {disclaimerAgreed
+            ? <MainView />
+            : <Disclaimer callback={() => setDisclaimerAgreed(true)} />
+        }
+    </>
 }
