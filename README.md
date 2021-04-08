@@ -17,6 +17,8 @@ To report any errors or suggestions, if you have a github account you can raise 
 ## Technical info
 The app is built with create-react-app and uses mvp.css
 
+The icon is from [https://www.freepik.com/](https://www.freepik.com/)
+
 ## License
 ```
 MIT License
