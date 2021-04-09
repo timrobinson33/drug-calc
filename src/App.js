@@ -187,25 +187,25 @@ function MainView() {
     return (
         <form>
             <div>
-                <label>Drug: </label>
-                <select value={drugIdx} disabled={showResults} onChange={e => selectDrug(Number(e.target.value))}>
+                <label htmlFor="drug">Drug:</label>
+                <select id="drug" value={drugIdx} disabled={showResults} onChange={e => selectDrug(Number(e.target.value))}>
                     {medicines.map((x, i) => <option key={i} value={i}>{x.drugName}</option>)}
                 </select>
             </div>
             {!!drugIdx && <div>
-                <label>Strength: </label>
-                <select value={strengthIdx} disabled={showResults} onChange={e => selectStrength(parseInt(e.target.value))}>
+                <label htmlFor="strength">Strength:</label>
+                <select id="strength" value={strengthIdx} disabled={showResults} onChange={e => selectStrength(parseInt(e.target.value))}>
                     {medicines[drugIdx].strengths.map((x, i) => <option key={i} value={i}>{x.amount ? `${x.amount}${units}/${x.volume}ml` : ""}</option>)}
                 </select>
             </div>}
             {!!strengthIdx && <>
                 <div>
-                    <label>Prescribed dose: </label>
-                    <input type="number" disabled={showResults} min={0} value={prescribedDoseStr} onChange={e => setPrescribedDoseStr(e.target.value)} />
+                    <label htmlFor="prescribed-dose">Prescribed dose:</label>
+                    <input id="prescribed-dose" type="number" disabled={showResults} min={0} value={prescribedDoseStr} onChange={e => setPrescribedDoseStr(e.target.value)} />
                     <span> {units}</span>
                 </div>
                 <div>
-                    <label>+ Stat/PRN doses: </label>
+                    <label>+ Stat/PRN doses:</label>
                     <select value={numStatDoses} disabled={showResults} onChange={e => selectNumStatDoses(parseInt(e.target.value))}>
                         {_.range(7).map(x => <option key={x} value={x}>{x}</option>)}
                     </select>
