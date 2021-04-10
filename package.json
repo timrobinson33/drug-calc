@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "genversion --es6 src/autobuild_version.js && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
@@ -41,6 +41,7 @@
   "devDependencies": {
     "@testing-library/dom": "^7.30.3",
     "@testing-library/user-event": "^12.8.3",
+    "genversion": "^2.3.1",
     "gh-pages": "^3.1.0"
   }
 }

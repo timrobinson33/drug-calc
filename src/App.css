@@ -24,3 +24,11 @@ div.box {
     border: 1px solid grey;
     padding: 0.5rem; 
 }
+
+div.copyright {
+    text-align: center;
+    color: grey;
+    font-size: 0.7rem;
+    font-style: italic;
+    margin-top: 5rem;
+}

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import 'mvp.css'
 import './App.css'
 import _ from 'lodash'
+import { version as appVersion }  from './autobuild_version'
 
 const divide = '\u00f7'
 
@@ -276,5 +277,8 @@ export default function App() {
             ? <MainView />
             : <Disclaimer callback={() => setDisclaimerAgreed(true)} />
         }
+        <div className="copyright">
+            Version {appVersion}. Copyright (c) Tim Robinson https://github.com/timrobinson33
+        </div>
     </>
 }
