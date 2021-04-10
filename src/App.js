@@ -132,19 +132,19 @@ function Results({ drugIdx, strengthIdx, prescribedDose, numStatDoses, statDoseS
     const wasteMl = numVials * drugStrength.volume - totalDoseMl
     return (
         <div className="box">
-                <label>Results:</label>
-                <p>
-                    <span>Total dose ({units}): {prescribedDose} + ({numStatDoses} x {statDoseStrength}) = {totalDose}{units}</span>
-                </p>
-                <p>
-                    <span>Total dose (ml): {totalDose} {divide} {drugStrength.amount} x {drugStrength.volume} = {formatNumber(totalDoseMl)}ml</span>
-                </p>
-                <p>
-                    <span>Number of vials: {numVials}</span>
-                </p>
-                <p>
-                    <span>Waste: {formatNumber(waste)}{units} (= {formatNumber(wasteMl)}ml)</span>
-                </p>
+            <label>Results:</label>
+            <p>
+                <span>Total dose ({units}): {prescribedDose} + ({numStatDoses} x {statDoseStrength}) = {totalDose}{units}</span>
+            </p>
+            <p>
+                <span>Total dose (ml): {totalDose} {divide} {drugStrength.amount} x {drugStrength.volume} = {formatNumber(totalDoseMl)}ml</span>
+            </p>
+            <p>
+                <span>Number of vials: {numVials}</span>
+            </p>
+            <p>
+                <span>Waste: {formatNumber(waste)}{units} (= {formatNumber(wasteMl)}ml)</span>
+            </p>
         </div>
     )
 }
@@ -201,22 +201,54 @@ function MainView() {
             {!!strengthIdx && <>
                 <div>
                     <label htmlFor="prescribed-dose">Prescribed dose:</label>
-                    <input id="prescribed-dose" type="number" disabled={showResults} min={0} value={prescribedDoseStr} onChange={e => setPrescribedDoseStr(e.target.value)} />
+                    <input
+                        id="prescribed-dose"
+                        type="number"
+                        disabled={showResults}
+                        min={0}
+                        value={prescribedDoseStr}
+                        onChange={event => {
+                            if (event.target.validity.valid) {
+                                setPrescribedDoseStr(event.target.value)
+                            }
+                        }}
+                    />
                     <span> {units}</span>
                 </div>
                 <div>
                     <label htmlFor="num-stat-doses">+ Stat/PRN doses:</label>
-                    <select id="num-stat-doses" value={numStatDoses} disabled={showResults} onChange={e => selectNumStatDoses(parseInt(e.target.value))}>
+                    <select
+                        id="num-stat-doses"
+                        value={numStatDoses}
+                        disabled={showResults}
+                        onChange={e => selectNumStatDoses(parseInt(e.target.value))}>
                         {_.range(7).map(x => <option key={x} value={x}>{x}</option>)}
                     </select>
                     <span> x </span>
-                    <input type="number" data-testid="stat-dose-strength" min={0} disabled={showResults || (!numStatDoses)} value={statDoseStrengthStr} onChange={e => setStatDoseStrengthStr(e.target.value)} />
+                    <input
+                        type="number"
+                        data-testid="stat-dose-strength"
+                        min={0}
+                        disabled={showResults || (!numStatDoses)}
+                        value={statDoseStrengthStr}
+                        onChange={event => {
+                            if (event.target.validity.valid) {
+                                setStatDoseStrengthStr(event.target.value)
+                            }
+                        }}
+                    />
                     <span> {units}</span>
                 </div>
                 {showResults &&
-                    <Results drugIdx={drugIdx} strengthIdx={strengthIdx} prescribedDose={prescribedDose} numStatDoses={numStatDoses} statDoseStrength={statDoseStrength} />}
+                    <Results
+                        drugIdx={drugIdx}
+                        strengthIdx={strengthIdx}
+                        prescribedDose={prescribedDose}
+                        numStatDoses={numStatDoses}
+                        statDoseStrength={statDoseStrength}
+                    />}
                 <button type="button" onClick={() => { selectDrug(0) }}>Reset</button>
-                {showCalc && 
+                {showCalc &&
                     <button type="button" onClick={() => { setShowResults(true) }}>Calculate</button>
                 }
             </>}

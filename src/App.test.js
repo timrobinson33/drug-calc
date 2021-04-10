@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 
@@ -14,15 +14,20 @@ const _calculate = () => screen.queryByText("Calculate")
 const _statDoseStrength = () => screen.queryByTestId("stat-dose-strength")
 const _results = () => screen.queryByText("Results:")
 
+// userEvent.type is difficult to use with number fields, so we use this instead
+export function fireChangeEvent(field, value) {
+  fireEvent.change(field, { target: { value } });
+}
+
 // used to set up most tests
 function fillInEverything() {
   render(<App />)
   userEvent.click(_ok())
   userEvent.selectOptions(_drug(), _diamorphine())
   userEvent.selectOptions(_strength(), _15mg_2ml())
-  userEvent.type(_prescribedDose(), "25")
+  fireChangeEvent(_prescribedDose(), "25")
   userEvent.selectOptions(_statDoses(), "3")
-  userEvent.type(_statDoseStrength(), "5")
+  fireChangeEvent(_statDoseStrength(), "5")
 }
 
 test('happy path', () => {
@@ -61,11 +66,11 @@ test('happy path', () => {
 
   // enter a dose
   expect(_calculate()).toBeFalsy()
-  userEvent.type(_prescribedDose(), "25")
+  fireChangeEvent(_prescribedDose(), "25")
   expect(_calculate()).toBeTruthy()
   userEvent.selectOptions(_statDoses(), "3")
   expect(_calculate()).toBeFalsy()
-  userEvent.type(_statDoseStrength(), "5")
+  fireChangeEvent(_statDoseStrength(), "5")
   expect(_calculate()).toBeTruthy()
   expect(_reset()).toBeTruthy()
 
@@ -77,6 +82,8 @@ test('happy path', () => {
   screen.getByText("Total dose (ml): 40 ÷ 15 x 2 = 5.33ml")
   screen.getByText("Number of vials: 3")
   screen.getByText("Waste: 5mg (= 0.67ml)")
+  expect(screen.queryAllByText(/mg/)).toHaveLength(12)
+  expect(screen.queryAllByText(/mcg/)).toHaveLength(0)
   expect(_reset()).toBeTruthy()
 
   // click reset
@@ -151,6 +158,16 @@ test('select different strength -> doses reset to blank', () => {
   expect(_results()).toBeFalsy()
 })
 
+test('prescribed dose invalid values', () => {
+  fillInEverything()
+  fireChangeEvent(_prescribedDose(), "999")
+  expect(_prescribedDose()).toHaveValue(999)
+  fireChangeEvent(_prescribedDose(), "-7")
+  expect(_prescribedDose()).toHaveValue(999)
+  fireChangeEvent(_prescribedDose(), "abc")
+  expect(_prescribedDose()).toHaveValue(null)
+})
+
 test('Set stat prn to zero -> clears stat dose', () => {
   fillInEverything()
   userEvent.selectOptions(_statDoses(), "0")
@@ -163,3 +180,74 @@ test('Set stat prn to zero -> clears stat dose', () => {
   expect(_statDoseStrength()).toHaveValue(null)
 })
 
+test('stat dose strength invalid values', () => {
+  fillInEverything()
+  fireChangeEvent(_statDoseStrength(), "999")
+  expect(_statDoseStrength()).toHaveValue(999)
+  fireChangeEvent(_statDoseStrength(), "-7")
+  expect(_statDoseStrength()).toHaveValue(999)
+  fireChangeEvent(_statDoseStrength(), "abc")
+  expect(_statDoseStrength()).toHaveValue(null)
+})
+
+test('0 treated the same as blank in prescribed dose', () => {
+  fillInEverything()
+  userEvent.selectOptions(_statDoses(), "0")
+  expect(_calculate()).toBeTruthy()
+  fireChangeEvent(_prescribedDose(), "0")
+  expect(_calculate()).toBeFalsy()
+})
+
+test('0 treated the same as blank in stat dose strength', () => {
+  fillInEverything()
+  fireChangeEvent(_prescribedDose(), "0")
+  expect(_calculate()).toBeTruthy()
+  fireChangeEvent(_statDoseStrength(), "0")
+  expect(_calculate()).toBeFalsy()
+})
+
+test('calculation with no stat dose', () => {
+  fillInEverything()
+  fireChangeEvent(_statDoses(), "0")
+  userEvent.click(_calculate())
+  screen.getByText("Total dose (mg): 25 + (0 x 0) = 25mg")
+  screen.getByText("Total dose (ml): 25 ÷ 15 x 2 = 3.33ml")
+  screen.getByText("Number of vials: 2")
+  screen.getByText("Waste: 5mg (= 0.67ml)")
+})
+
+test('calculation with no prescribed dose', () => {
+  fillInEverything()
+  fireChangeEvent(_prescribedDose(), "")
+  userEvent.click(_calculate())
+  screen.getByText("Total dose (mg): 0 + (3 x 5) = 15mg")
+  screen.getByText("Total dose (ml): 15 ÷ 15 x 2 = 2ml")
+  screen.getByText("Number of vials: 1")
+  screen.getByText("Waste: 0mg (= 0ml)")
+})
+
+test('micrograms', () => {
+  const windowAlertMock = jest.spyOn(window, "alert")
+  windowAlertMock.mockImplementation(() => { })
+  fillInEverything()
+  expect(windowAlertMock).not.toHaveBeenCalled()
+
+  // as soon as you select fentanyl, the alert is shown
+  userEvent.selectOptions(_drug(), screen.getByText("Fentanyl"))
+  expect(windowAlertMock).toHaveBeenCalledWith(expect.stringContaining("is measured in micrograms"))
+
+  // fill in the fields and calculate
+  userEvent.selectOptions(_strength(), screen.getByText("100mcg/2ml"))
+  fireChangeEvent(_prescribedDose(), "25")
+  userEvent.selectOptions(_statDoses(), "3")
+  fireChangeEvent(_statDoseStrength(), "5")
+  userEvent.click(_calculate())
+
+  // everything is shown in mcg
+  screen.getByText("Total dose (mcg): 25 + (3 x 5) = 40mcg")
+  screen.getByText("Total dose (ml): 40 ÷ 100 x 2 = 0.8ml")
+  screen.getByText("Number of vials: 1")
+  screen.getByText("Waste: 60mcg (= 1.2ml)")
+  expect(screen.queryAllByText(/mcg/)).toHaveLength(7)
+  expect(screen.queryAllByText(/mg/)).toHaveLength(0)
+})
