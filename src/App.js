@@ -131,7 +131,7 @@ function Results({ drugIdx, strengthIdx, prescribedDose, numStatDoses, statDoseS
     const waste = numVials * drugStrength.amount - totalDose
     const wasteMl = numVials * drugStrength.volume - totalDoseMl
     return (
-        <div class="box">
+        <div className="box">
                 <label>Results:</label>
                 <p>
                     <span>Total dose ({units}): {prescribedDose} + ({numStatDoses} x {statDoseStrength}) = {totalDose}{units}</span>
@@ -160,7 +160,7 @@ function MainView() {
     const prescribedDose = Number(prescribedDoseStr)
     const statDoseStrength = Number(statDoseStrengthStr)
     const units = medicines[drugIdx].units
-    const showCalc = !showResults && !!(prescribedDose || (statDoseStrength && numStatDoses))
+    const showCalc = !showResults && !!((prescribedDose && !numStatDoses) || statDoseStrength)
 
     function selectDrug(i) {
         if (medicines[i].units !== "mg") {
@@ -205,19 +205,19 @@ function MainView() {
                     <span> {units}</span>
                 </div>
                 <div>
-                    <label>+ Stat/PRN doses:</label>
-                    <select value={numStatDoses} disabled={showResults} onChange={e => selectNumStatDoses(parseInt(e.target.value))}>
+                    <label htmlFor="num-stat-doses">+ Stat/PRN doses:</label>
+                    <select id="num-stat-doses" value={numStatDoses} disabled={showResults} onChange={e => selectNumStatDoses(parseInt(e.target.value))}>
                         {_.range(7).map(x => <option key={x} value={x}>{x}</option>)}
                     </select>
                     <span> x </span>
-                    <input type="number" min={0} disabled={showResults || (!numStatDoses)} value={statDoseStrengthStr} onChange={e => setStatDoseStrengthStr(e.target.value)} />
+                    <input type="number" data-testid="stat-dose-strength" min={0} disabled={showResults || (!numStatDoses)} value={statDoseStrengthStr} onChange={e => setStatDoseStrengthStr(e.target.value)} />
                     <span> {units}</span>
                 </div>
                 {showResults &&
                     <Results drugIdx={drugIdx} strengthIdx={strengthIdx} prescribedDose={prescribedDose} numStatDoses={numStatDoses} statDoseStrength={statDoseStrength} />}
-                <button onClick={() => { selectDrug(0) }}>Reset</button>
+                <button type="button" onClick={() => { selectDrug(0) }}>Reset</button>
                 {showCalc && 
-                    <button onClick={() => { setShowResults(true) }}>Calculate</button>
+                    <button type="button" onClick={() => { setShowResults(true) }}>Calculate</button>
                 }
             </>}
         </form>
@@ -231,7 +231,7 @@ function Disclaimer({ callback }) {
             <p>This application is intended to be used only to cross-check manual drug calculations.</p>
             <p>It is not approved by NHS or any other healthcare body and you should not rely on it to perform drug calculations.</p>
             <p>The authors accept no liability for any errors in the application.</p>
-            <button onClick={callback}>OK</button>
+            <button type="button" onClick={callback}>OK</button>
         </div>
     )
 }
