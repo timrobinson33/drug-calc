@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/drug-calc/static/css/main.1516cec9.chunk.css",
-    "main.js": "/drug-calc/static/js/main.b938df75.chunk.js",
-    "main.js.map": "/drug-calc/static/js/main.b938df75.chunk.js.map",
+    "main.js": "/drug-calc/static/js/main.42475248.chunk.js",
+    "main.js.map": "/drug-calc/static/js/main.42475248.chunk.js.map",
     "runtime-main.js": "/drug-calc/static/js/runtime-main.f2530f02.js",
     "runtime-main.js.map": "/drug-calc/static/js/runtime-main.f2530f02.js.map",
     "static/css/2.ea0f5931.chunk.css": "/drug-calc/static/css/2.ea0f5931.chunk.css",
@@ -18,6 +18,6 @@
     "static/css/2.ea0f5931.chunk.css",
     "static/js/2.5db03ba5.chunk.js",
     "static/css/main.1516cec9.chunk.css",
-    "static/js/main.b938df75.chunk.js"
+    "static/js/main.42475248.chunk.js"
   ]
 }
