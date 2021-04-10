@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/drug-calc/static/css/main.b89a3e02.chunk.css",
-    "main.js": "/drug-calc/static/js/main.41a91e7f.chunk.js",
-    "main.js.map": "/drug-calc/static/js/main.41a91e7f.chunk.js.map",
+    "main.css": "/drug-calc/static/css/main.1516cec9.chunk.css",
+    "main.js": "/drug-calc/static/js/main.b938df75.chunk.js",
+    "main.js.map": "/drug-calc/static/js/main.b938df75.chunk.js.map",
     "runtime-main.js": "/drug-calc/static/js/runtime-main.f2530f02.js",
     "runtime-main.js.map": "/drug-calc/static/js/runtime-main.f2530f02.js.map",
     "static/css/2.ea0f5931.chunk.css": "/drug-calc/static/css/2.ea0f5931.chunk.css",
@@ -10,14 +10,14 @@
     "static/js/2.5db03ba5.chunk.js.map": "/drug-calc/static/js/2.5db03ba5.chunk.js.map",
     "index.html": "/drug-calc/index.html",
     "static/css/2.ea0f5931.chunk.css.map": "/drug-calc/static/css/2.ea0f5931.chunk.css.map",
-    "static/css/main.b89a3e02.chunk.css.map": "/drug-calc/static/css/main.b89a3e02.chunk.css.map",
+    "static/css/main.1516cec9.chunk.css.map": "/drug-calc/static/css/main.1516cec9.chunk.css.map",
     "static/js/2.5db03ba5.chunk.js.LICENSE.txt": "/drug-calc/static/js/2.5db03ba5.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.f2530f02.js",
     "static/css/2.ea0f5931.chunk.css",
     "static/js/2.5db03ba5.chunk.js",
-    "static/css/main.b89a3e02.chunk.css",
-    "static/js/main.41a91e7f.chunk.js"
+    "static/css/main.1516cec9.chunk.css",
+    "static/js/main.b938df75.chunk.js"
   ]
 }
