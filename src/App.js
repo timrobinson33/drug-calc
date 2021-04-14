@@ -205,6 +205,7 @@ function MainView() {
                     <input
                         id="prescribed-dose"
                         type="number"
+                        step="any"
                         disabled={showResults}
                         min={0}
                         value={prescribedDoseStr}
@@ -230,6 +231,7 @@ function MainView() {
                         type="number"
                         data-testid="stat-dose-strength"
                         min={0}
+                        step="any"
                         disabled={showResults || (!numStatDoses)}
                         value={statDoseStrengthStr}
                         onChange={event => {

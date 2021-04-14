@@ -100,7 +100,6 @@ test('happy path', () => {
   expect(_results()).toBeFalsy()
 })
 
-
 test('select a blank drug -> everything clears', () => {
   fillInEverything()
   userEvent.selectOptions(_drug(), "0")
@@ -158,8 +157,12 @@ test('select different strength -> doses reset to blank', () => {
   expect(_results()).toBeFalsy()
 })
 
-test('prescribed dose invalid values', () => {
+test('prescribed dose valid and invalid values', () => {
   fillInEverything()
+  fireChangeEvent(_prescribedDose(), "9.9973")
+  expect(_prescribedDose()).toHaveValue(9.9973)
+  fireChangeEvent(_prescribedDose(), "0.0004")
+  expect(_prescribedDose()).toHaveValue(0.0004)
   fireChangeEvent(_prescribedDose(), "999")
   expect(_prescribedDose()).toHaveValue(999)
   fireChangeEvent(_prescribedDose(), "-7")
@@ -180,8 +183,12 @@ test('Set stat prn to zero -> clears stat dose', () => {
   expect(_statDoseStrength()).toHaveValue(null)
 })
 
-test('stat dose strength invalid values', () => {
+test('stat dose strength valid and invalid values', () => {
   fillInEverything()
+  fireChangeEvent(_statDoseStrength(), "9.9973")
+  expect(_statDoseStrength()).toHaveValue(9.9973)
+  fireChangeEvent(_statDoseStrength(), "0.0004")
+  expect(_statDoseStrength()).toHaveValue(0.0004)
   fireChangeEvent(_statDoseStrength(), "999")
   expect(_statDoseStrength()).toHaveValue(999)
   fireChangeEvent(_statDoseStrength(), "-7")
