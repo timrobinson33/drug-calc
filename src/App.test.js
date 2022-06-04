@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 
@@ -14,10 +14,7 @@ const _calculate = () => screen.queryByText("Calculate")
 const _statDoseStrength = () => screen.queryByTestId("stat-dose-strength")
 const _results = () => screen.queryByText("Results:")
 
-// userEvent.type is difficult to use with number fields, so we use this instead
-export function fireChangeEvent(field, value) {
-  fireEvent.change(field, { target: { value } });
-}
+const typeInField = (field, value) => user.type(field, value, { initialSelectionStart: 0, initialSelectionEnd: 999 })
 
 const user = userEvent.setup()
 
@@ -25,11 +22,11 @@ const user = userEvent.setup()
 async function fillInEverything() {
   render(<App />)
   await user.click(_ok())
-  await await user.selectOptions(_drug(), _diamorphine())
+  await user.selectOptions(_drug(), _diamorphine())
   await user.selectOptions(_strength(), _15mg_2ml())
-  fireChangeEvent(_prescribedDose(), "25")
+  await typeInField(_prescribedDose(), "25")
   await user.selectOptions(_statDoses(), "3")
-  fireChangeEvent(_statDoseStrength(), "5")
+  await typeInField(_statDoseStrength(), "5")
 }
 
 test('happy path', async () => {
@@ -68,11 +65,11 @@ test('happy path', async () => {
 
   // enter a dose
   expect(_calculate()).toBeFalsy()
-  fireChangeEvent(_prescribedDose(), "25")
+  await user.type(_prescribedDose(), "25")
   expect(_calculate()).toBeTruthy()
   await user.selectOptions(_statDoses(), "3")
   expect(_calculate()).toBeFalsy()
-  fireChangeEvent(_statDoseStrength(), "5")
+  await user.type(_statDoseStrength(), "5")
   expect(_calculate()).toBeTruthy()
   expect(_reset()).toBeTruthy()
 
@@ -161,16 +158,18 @@ test('select different strength -> doses reset to blank', async () => {
 
 test('prescribed dose valid and invalid values', async () => {
   await fillInEverything()
-  fireChangeEvent(_prescribedDose(), "9.9973")
+  await typeInField(_prescribedDose(), "9.9973")
   expect(_prescribedDose()).toHaveValue(9.9973)
-  fireChangeEvent(_prescribedDose(), "0.0004")
+  await typeInField(_prescribedDose(), "0.0004")
   expect(_prescribedDose()).toHaveValue(0.0004)
-  fireChangeEvent(_prescribedDose(), "999")
+  await typeInField(_prescribedDose(), "999")
   expect(_prescribedDose()).toHaveValue(999)
-  fireChangeEvent(_prescribedDose(), "-7")
-  expect(_prescribedDose()).toHaveValue(999)
-  fireChangeEvent(_prescribedDose(), "abc")
+  await typeInField(_prescribedDose(), "-7")
   expect(_prescribedDose()).toHaveValue(null)
+  await typeInField(_prescribedDose(), "999")
+  expect(_prescribedDose()).toHaveValue(999)
+  await typeInField(_prescribedDose(), "abc")
+  expect(_prescribedDose()).toHaveValue(999)
 })
 
 test('Set stat prn to zero -> clears stat dose', async () => {
@@ -187,37 +186,39 @@ test('Set stat prn to zero -> clears stat dose', async () => {
 
 test('stat dose strength valid and invalid values', async () => {
   await fillInEverything()
-  fireChangeEvent(_statDoseStrength(), "9.9973")
+  await typeInField(_statDoseStrength(), "9.9973")
   expect(_statDoseStrength()).toHaveValue(9.9973)
-  fireChangeEvent(_statDoseStrength(), "0.0004")
+  await typeInField(_statDoseStrength(), "0.0004")
   expect(_statDoseStrength()).toHaveValue(0.0004)
-  fireChangeEvent(_statDoseStrength(), "999")
+  await typeInField(_statDoseStrength(), "999")
   expect(_statDoseStrength()).toHaveValue(999)
-  fireChangeEvent(_statDoseStrength(), "-7")
-  expect(_statDoseStrength()).toHaveValue(999)
-  fireChangeEvent(_statDoseStrength(), "abc")
+  await typeInField(_statDoseStrength(), "-7")
   expect(_statDoseStrength()).toHaveValue(null)
+  await typeInField(_statDoseStrength(), "999")
+  expect(_statDoseStrength()).toHaveValue(999)
+  await typeInField(_statDoseStrength(), "abc")
+  expect(_statDoseStrength()).toHaveValue(999)
 })
 
 test('0 treated the same as blank in prescribed dose', async () => {
   await fillInEverything()
   await user.selectOptions(_statDoses(), "0")
   expect(_calculate()).toBeTruthy()
-  fireChangeEvent(_prescribedDose(), "0")
+  await typeInField(_prescribedDose(), "0")
   expect(_calculate()).toBeFalsy()
 })
 
 test('0 treated the same as blank in stat dose strength', async () => {
   await fillInEverything()
-  fireChangeEvent(_prescribedDose(), "0")
+  await typeInField(_prescribedDose(), "0")
   expect(_calculate()).toBeTruthy()
-  fireChangeEvent(_statDoseStrength(), "0")
+  await typeInField(_statDoseStrength(), "0")
   expect(_calculate()).toBeFalsy()
 })
 
 test('calculation with no stat dose', async () => {
   await fillInEverything()
-  fireChangeEvent(_statDoses(), "0")
+  await user.selectOptions(_statDoses(), "0")
   await user.click(_calculate())
   screen.getByText("Total dose (mg): 25 + (0 x 0) = 25mg")
   screen.getByText("Total dose (ml): 25 ÷ 15 x 2 = 3.33ml")
@@ -227,7 +228,9 @@ test('calculation with no stat dose', async () => {
 
 test('calculation with no prescribed dose', async () => {
   await fillInEverything()
-  fireChangeEvent(_prescribedDose(), "")
+  await user.click(_prescribedDose())
+  await user.keyboard("{Control>}a{/Control}")
+  await user.keyboard("[Delete]")
   await user.click(_calculate())
   screen.getByText("Total dose (mg): 0 + (3 x 5) = 15mg")
   screen.getByText("Total dose (ml): 15 ÷ 15 x 2 = 2ml")
@@ -247,9 +250,9 @@ test('micrograms', async () => {
 
   // fill in the fields and calculate
   await user.selectOptions(_strength(), screen.getByText("100mcg/2ml"))
-  fireChangeEvent(_prescribedDose(), "25")
+  await typeInField(_prescribedDose(), "25")
   await user.selectOptions(_statDoses(), "3")
-  fireChangeEvent(_statDoseStrength(), "5")
+  await typeInField(_statDoseStrength(), "5")
   await user.click(_calculate())
 
   // everything is shown in mcg
