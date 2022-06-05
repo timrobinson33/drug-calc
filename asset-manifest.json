@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/drug-calc/static/css/main.575c402a.css",
-    "main.js": "/drug-calc/static/js/main.ffdc374d.js",
+    "main.js": "/drug-calc/static/js/main.1e29c693.js",
     "index.html": "/drug-calc/index.html",
     "main.575c402a.css.map": "/drug-calc/static/css/main.575c402a.css.map",
-    "main.ffdc374d.js.map": "/drug-calc/static/js/main.ffdc374d.js.map"
+    "main.1e29c693.js.map": "/drug-calc/static/js/main.1e29c693.js.map"
   },
   "entrypoints": [
     "static/css/main.575c402a.css",
-    "static/js/main.ffdc374d.js"
+    "static/js/main.1e29c693.js"
   ]
 }
