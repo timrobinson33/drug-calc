@@ -123,22 +123,18 @@ function formatNumber(n) {
     return parseFloat(n.toFixed(2))
 }
 
-function Results({ drugIdx, strengthIdx, prescribedDose, numStatDoses, statDoseStrength }) {
+function Results({ drugIdx, strengthIdx, dose }) {
     const units = medicines[drugIdx].units
     const drugStrength = medicines[drugIdx].strengths[strengthIdx]
-    const totalDose = prescribedDose + numStatDoses * statDoseStrength
-    const totalDoseMl = totalDose / drugStrength.amount * drugStrength.volume
-    const numVials = _.ceil(totalDoseMl / drugStrength.volume)
-    const waste = numVials * drugStrength.amount - totalDose
-    const wasteMl = numVials * drugStrength.volume - totalDoseMl
+    const doseMl = dose / drugStrength.amount * drugStrength.volume
+    const numVials = _.ceil(doseMl / drugStrength.volume)
+    const waste = numVials * drugStrength.amount - dose
+    const wasteMl = numVials * drugStrength.volume - doseMl
     return (
         <div className="box">
             <label>Results:</label>
             <p>
-                <span>Total dose ({units}): {prescribedDose} + ({numStatDoses} x {statDoseStrength}) = {totalDose}{units}</span>
-            </p>
-            <p>
-                <span>Total dose (ml): {totalDose} {divide} {drugStrength.amount} x {drugStrength.volume} = {formatNumber(totalDoseMl)}ml</span>
+                <span>Dose (ml): {dose} {divide} {drugStrength.amount} x {drugStrength.volume} = {formatNumber(doseMl)}ml</span>
             </p>
             <p>
                 <span>Number of vials: {numVials}</span>
@@ -153,15 +149,12 @@ function Results({ drugIdx, strengthIdx, prescribedDose, numStatDoses, statDoseS
 function MainView() {
     const [drugIdx, setDrugIdx] = useState(0)
     const [strengthIdx, setStrengthIdx] = useState(0)
-    const [prescribedDoseStr, setPrescribedDoseStr] = useState("")
-    const [numStatDoses, setNumStatDoses] = useState(0)
-    const [statDoseStrengthStr, setStatDoseStrengthStr] = useState("")
+    const [doseStr, setDoseStr] = useState("")
     const [showResults, setShowResults] = useState(false)
 
-    const prescribedDose = Number(prescribedDoseStr)
-    const statDoseStrength = Number(statDoseStrengthStr)
+    const dose = Number(doseStr)
     const units = medicines[drugIdx].units
-    const showCalc = !showResults && !!((prescribedDose && !numStatDoses) || statDoseStrength)
+    const showCalc = !showResults && !!dose 
 
     function selectDrug(i) {
         if (medicines[i].units !== "mg") {
@@ -173,16 +166,8 @@ function MainView() {
 
     function selectStrength(i) {
         setStrengthIdx(i)
-        setPrescribedDoseStr("")
-        selectNumStatDoses(0)
+        setDoseStr("")
         setShowResults(false)
-    }
-
-    function selectNumStatDoses(n) {
-        setNumStatDoses(n)
-        if (!n) {
-            setStatDoseStrengthStr("")
-        }
     }
 
     return (
@@ -201,42 +186,17 @@ function MainView() {
             </div>}
             {!!strengthIdx && <>
                 <div>
-                    <label htmlFor="prescribed-dose">Prescribed dose:</label>
+                    <label htmlFor="dose">Dose:</label>
                     <input
-                        id="prescribed-dose"
+                        id="dose"
                         type="number"
                         step="any"
                         disabled={showResults}
                         min={0}
-                        value={prescribedDoseStr}
+                        value={doseStr}
                         onChange={event => {
                             if (event.target.validity.valid) {
-                                setPrescribedDoseStr(event.target.value)
-                            }
-                        }}
-                    />
-                    <span> {units}</span>
-                </div>
-                <div>
-                    <label htmlFor="num-stat-doses">+ Stat/PRN doses:</label>
-                    <select
-                        id="num-stat-doses"
-                        value={numStatDoses}
-                        disabled={showResults}
-                        onChange={e => selectNumStatDoses(parseInt(e.target.value))}>
-                        {_.range(7).map(x => <option key={x} value={x}>{x}</option>)}
-                    </select>
-                    <span> x </span>
-                    <input
-                        type="number"
-                        data-testid="stat-dose-strength"
-                        min={0}
-                        step="any"
-                        disabled={showResults || (!numStatDoses)}
-                        value={statDoseStrengthStr}
-                        onChange={event => {
-                            if (event.target.validity.valid) {
-                                setStatDoseStrengthStr(event.target.value)
+                                setDoseStr(event.target.value)
                             }
                         }}
                     />
@@ -246,9 +206,7 @@ function MainView() {
                     <Results
                         drugIdx={drugIdx}
                         strengthIdx={strengthIdx}
-                        prescribedDose={prescribedDose}
-                        numStatDoses={numStatDoses}
-                        statDoseStrength={statDoseStrength}
+                        dose={dose}
                     />}
                 <button type="button" onClick={() => { selectDrug(0) }}>Reset</button>
                 {showCalc &&
